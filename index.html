@@ -277,6 +277,7 @@ let googleInfoWindow = null;
 let autocomplete = null;
 let selectedPlace = null;
 const STORAGE_KEY = 'kikitaihan_gmaps_key';
+const STORE_KEY = 'kikitaihan_last_store';
 
 function init() {
   const selector = document.getElementById('sel-store');
@@ -285,7 +286,17 @@ function init() {
     o.value = i; o.textContent = s.name;
     selector.appendChild(o);
   });
-  selector.onchange = updateView;
+
+  // 前回選択した店舗を復元
+  const savedStore = localStorage.getItem(STORE_KEY);
+  if (savedStore !== null && STORES[savedStore]) selector.value = savedStore;
+
+  // 変更時に保存しつつ再描画
+  selector.onchange = () => {
+    localStorage.setItem(STORE_KEY, selector.value);
+    updateView();
+  };
+
   document.getElementById('btn-calc').onclick = calculate;
 
   const savedKey = localStorage.getItem(STORAGE_KEY);
